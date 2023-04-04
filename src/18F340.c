@@ -60,12 +60,14 @@ API_CALLABLE(IsPartnerImmobile) {
     return ApiStatus_DONE2;
 }
 
+
 API_CALLABLE(ActivateDefend) {
     ActorPart* actorPart = &gBattleStatus.playerActor->partsTable[0];
 
     deduct_current_move_fp();
     gBattleStatus.flags1 |= BS_FLAGS1_PLAYER_DEFENDING;
     actorPart->idleAnimations = bMarioDefendAnims;
+    //@patch: fix defend animation to be ANIM_Mario1_Crouch instead of ANIM_Mario1_Idle
     set_animation(0, 0, ANIM_Mario1_Crouch);
     return ApiStatus_DONE2;
 }
@@ -995,7 +997,8 @@ EvtScript EVS_Player_HandleEvent = {
         EVT_CASE_OR_EQ(EVENT_ZERO_DAMAGE)
         EVT_CASE_OR_EQ(EVENT_IMMUNE)
             EVT_CALL(PlaySoundAtActor, ACTOR_PLAYER, SOUND_208C)
-            EVT_SET_CONST(LVar1, ANIM_Mario1_Idle)
+            //@patch: use defend animation instead of ANIM_Mario1_Idle
+            EVT_SET_CONST(LVar1, ANIM_Mario1_Crouch)
             EVT_EXEC_WAIT(D_80298948)
         EVT_END_CASE_GROUP
         EVT_CASE_OR_EQ(EVENT_18)

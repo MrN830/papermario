@@ -277,7 +277,8 @@ HitResult calc_enemy_damage_target(Actor* attacker) {
             target->currentHP = gPlayerData.curHP;
             break;
         case ACTOR_CLASS_PARTNER:
-            target->currentHP = 127;
+        //@patch dont set partner hp to 127
+            //target->currentHP = 127;
             break;
         case ACTOR_CLASS_ENEMY:
             break;
@@ -2634,7 +2635,9 @@ ApiStatus GetActorHP(Evt* script, s32 isInitialCall) {
             outVal = playerData->curHP;
             break;
         case ACTOR_CLASS_PARTNER:
-            outVal = 99;
+            //@patch: get partner actor hp with new struct offset
+            outVal = gPlayerData.partners[gPlayerData.currentPartner].currentHp;
+            //outVal = 99;
             break;
         default:
             outVal = actor->currentHP;

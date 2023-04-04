@@ -2235,7 +2235,8 @@ u32 bMarioIdleAnims[] = {
 
 s32 bMarioDefendAnims[] = {
     STATUS_NORMAL,          ANIM_Mario1_Crouch,
-    STATUS_DANGER,          ANIM_Mario1_TiredIdle,
+    //@patch: STATUS_END instead of STATUS_DANGER
+    STATUS_END,             ANIM_Mario1_TiredIdle,
     STATUS_STONE,           ANIM_MarioB3_Petrified,
     STATUS_SLEEP,           ANIM_MarioB1_Sleep,
     STATUS_DIZZY,           ANIM_MarioB1_Sick,

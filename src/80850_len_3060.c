@@ -2,6 +2,7 @@
 #include "hud_element.h"
 #include "dx/config.h"
 
+void DrawMarioHeartIcon(s32 x, s32 y);
 extern HudScript* TimesHudScript;
 extern HudScript* SPIncrementHudScripts[];
 extern HudScript* SPStarHudScripts[];
@@ -64,9 +65,8 @@ void clear_player_data(void) {
     for (i = 0; i < ARRAY_COUNT(playerData->partners); i++) {
         playerData->partners[i].enabled = FALSE;
         playerData->partners[i].level = 0;
-        playerData->partners[i].unk_02[0] = 0;
-        playerData->partners[i].unk_02[1] = 0;
-        playerData->partners[i].unk_02[2] = 0;
+        playerData->partners[i].currentHp = 0;
+        playerData->partners[i].maxHp = 0;
     }
 
     for (i = 0; i < ARRAY_COUNT(playerData->keyItems); i++) {
@@ -344,8 +344,8 @@ void initialize_status_menu(void) {
     uiStatus->iconIndex12 = -1;
 
     close_status_menu();
-
-    iconIndex = hud_element_create(&HES_StatusHP);
+    //@patch: put partner hp text here instead of HP icon
+    iconIndex = hud_element_create(&HES_StatusTimes);
     uiStatus->hpIconIndices[0] = iconIndex;
     hud_element_set_flags(iconIndex, HUD_ELEMENT_FLAG_80);
     hud_element_clear_flags(iconIndex, HUD_ELEMENT_FLAG_FILTER_TEX);
@@ -452,11 +452,12 @@ void status_menu_draw_number(s32 iconID, s32 x, s32 y, s32 value, s32 numDigits)
     }
 }
 
+//@patch: support drawing 3 digits
 void status_menu_draw_stat(s32 id, s32 x, s32 y, s32 currentValue, s32 maxValue) {
     s8 digits[4];
     s32 cond;
     s32 digit;
-    s32 numDigits = 2;
+    s32 numDigits = 3;
     s32 localX;
     s32 localY;
     s32 i = 0;
@@ -464,7 +465,7 @@ void status_menu_draw_stat(s32 id, s32 x, s32 y, s32 currentValue, s32 maxValue)
     s32 baseY = y + 8;
 
     hud_element_set_script(id, SlashHudScript);
-    hud_element_set_render_pos(id, baseX + 14, baseY + 1);
+    hud_element_set_render_pos(id, baseX + (numDigits * 8) - 1, baseY + 1);
     hud_element_clear_flags(id, HUD_ELEMENT_FLAG_DISABLED);
     hud_element_draw_next(id);
 
@@ -493,7 +494,7 @@ void status_menu_draw_stat(s32 id, s32 x, s32 y, s32 currentValue, s32 maxValue)
         maxValue /= 10;
     }
 
-    localX = baseX + 26;
+    localX = baseX + (numDigits * 8) + 11;
     localY = baseY;
     cond = FALSE;
     for (i = 0; i < numDigits; i++, localX += 8) {
@@ -507,6 +508,8 @@ void status_menu_draw_stat(s32 id, s32 x, s32 y, s32 currentValue, s32 maxValue)
         }
     }
 }
+
+void DrawNewStatusMenuBarsAndIcons(s32 x, s32 y);
 
 void update_status_menu(void) {
     UiStatus* uiStatus = &gUIStatus;
@@ -524,6 +527,7 @@ void update_status_menu(void) {
     s32 s1;
     s32 spBars;
     s32 maxStarPower;
+    s32 hpBarX, hpBarY;
 
     if (gGameStatusPtr->creditsViewportMode >= 0 ||
         gGameStatusPtr->demoState != 0 ||
@@ -692,11 +696,13 @@ void update_status_menu(void) {
     draw_box(0, WINDOW_STYLE_5, x,       y - 20, 0, 174, 35 + 20, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
     draw_box(0, WINDOW_STYLE_6, x + 174, y - 20, 0, 122, 25 + 20, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
 #else
-    draw_box(0, WINDOW_STYLE_5, x,       y, 0, 174, 35, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
-    draw_box(0, WINDOW_STYLE_6, x + 174, y, 0, 122, 25, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
+    //@patch: add custom function call
+    
+    // draw_box(0, WINDOW_STYLE_5, x,       y, 0, 174, 35, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
+    // draw_box(0, WINDOW_STYLE_6, x + 174, y, 0, 122, 25, 255, 0, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, NULL, NULL, NULL, SCREEN_WIDTH, SCREEN_HEIGHT, NULL);
 #endif
 
-
+    DrawNewStatusMenuBarsAndIcons(x, y);
     if (uiStatus->hpBlinkTimer > 0) {
         uiStatus->hpBlinkTimer--;
         if (uiStatus->hpBlinkTimer == 0) {
@@ -717,21 +723,28 @@ void update_status_menu(void) {
     }
 
     if (showStat) {
+        //@patch: draws partner curHP / maxHP
         id = uiStatus->hpIconIndices[0];
         x = uiStatus->drawPosX + 22;
         y = uiStatus->drawPosY + 13;
         hud_element_set_render_pos(id, x, y);
-        hud_element_draw_next(id);
+        //@patch: remove drawing of HP icon
+        //hud_element_draw_next(id);
 
-        id = uiStatus->hpIconIndices[1];
-        x = uiStatus->drawPosX + 37;
-        y = uiStatus->drawPosY + 13;
-        hud_element_set_render_pos(id, x, y);
-        hud_element_draw_next(id);
+        // id = uiStatus->hpIconIndices[1];
+        // x = uiStatus->drawPosX + 37;
+        // y = uiStatus->drawPosY + 13;
+        // hud_element_set_render_pos(id, x, y);
+        //@patch: remove drawing of "HP" text
+        //hud_element_draw_next(id);
 
         x = uiStatus->drawPosX + 48;
         y = uiStatus->drawPosY + 8;
-        status_menu_draw_stat(uiStatus->iconIndex8, x, y, uiStatus->displayHP, playerData->curMaxHP);
+        status_menu_draw_stat(uiStatus->iconIndex8, x - 14, y, uiStatus->displayHP, playerData->curMaxHP);
+        //draw partner hp
+        status_menu_draw_stat(uiStatus->hpIconIndices[0], x - 14, y + 22,
+                            gPlayerData.partners[gPlayerData.currentPartner].currentHp,
+                            gPlayerData.partners[gPlayerData.currentPartner].maxHp);
     }
 
     if (uiStatus->fpBlinkTimer > 0) {
@@ -758,18 +771,24 @@ void update_status_menu(void) {
         x = uiStatus->drawPosX + 110;
         y = uiStatus->drawPosY + 13;
         hud_element_set_render_pos(id, x, y);
-        hud_element_draw_next(id);
+        //@patch: remove FP icon
+        //hud_element_draw_next(id);
 
         id = uiStatus->fpIconIndices[1];
         x = uiStatus->drawPosX + 125;
         y = uiStatus->drawPosY + 13;
         hud_element_set_render_pos(id, x, y);
-        hud_element_draw_next(id);
+        //@patch: remove "FP" text icon
+        //hud_element_draw_next(id);
 
         x = uiStatus->drawPosX + 136;
         y = uiStatus->drawPosY + 8;
-        status_menu_draw_stat(uiStatus->iconIndex9, x, y, uiStatus->displayFP, playerData->curMaxFP);
+        //@patch: move fp drawing location
+        status_menu_draw_stat(uiStatus->iconIndex9, x - 16, y, uiStatus->displayFP, playerData->curMaxFP);
     }
+
+    x = uiStatus->drawPosX + 48;
+    y = uiStatus->drawPosY + 8;
 
     if (playerData->level >= 27) {
         playerData->starPoints = 0;
@@ -791,18 +810,21 @@ void update_status_menu(void) {
         id = uiStatus->starpointsIconIndex;
         x = uiStatus->drawPosX + 195;
         y = uiStatus->drawPosY + 14;
-        hud_element_set_render_pos(id, x, y);
+        //@patch: adjust X to the right by 6
+        hud_element_set_render_pos(id, x + 6, y);
         hud_element_draw_next(id);
 
         id = uiStatus->starpointsShineIconIndex;
         x = uiStatus->drawPosX + 195;
         y = uiStatus->drawPosY + 9;
-        hud_element_set_render_pos(id, x, y);
+        //@patch: adjust X to the right by 6
+        hud_element_set_render_pos(id, x + 6, y);
         hud_element_draw_next(id);
 
         x = uiStatus->drawPosX + 200;
         y = uiStatus->drawPosY + 8;
-        status_menu_draw_number(uiStatus->iconIndexA, x, y, playerData->starPoints, 2);
+        //@patch: adjust X to the right by 6
+        status_menu_draw_number(uiStatus->iconIndexA, x + 6, y, playerData->starPoints, 2);
     }
 
     if (uiStatus->coinsBlinkTimer > 0) {
@@ -828,18 +850,21 @@ void update_status_menu(void) {
         id = uiStatus->coinIconIndex;
         x = uiStatus->drawPosX + 244;
         y = uiStatus->drawPosY + 14;
-        hud_element_set_render_pos(id, x, y);
+        //@patch: adjust X to the right by 6
+        hud_element_set_render_pos(id, x + 6, y);
         hud_element_draw_next(id);
 
         id = uiStatus->coinSparkleIconIndex;
         x = uiStatus->drawPosX + 244;
         y = uiStatus->drawPosY + 14;
-        hud_element_set_render_pos(id, x, y);
+        //@patch: adjust X to the right by 6
+        hud_element_set_render_pos(id, x + 6, y);
         hud_element_draw_next(id);
 
         x = uiStatus->drawPosX + 247;
         y = uiStatus->drawPosY + 8;
-        status_menu_draw_number(uiStatus->iconIndexB, x, y, uiStatus->displayCoins, 3);
+        //@patch: adjust X to the right by 6
+        status_menu_draw_number(uiStatus->iconIndexB, x + 6, y, uiStatus->displayCoins, 3);
     }
 
     id = uiStatus->starIconIndex;
@@ -856,8 +881,9 @@ void update_status_menu(void) {
         uiStatus->spBlinkCounter++;
     }
 
-    x = uiStatus->drawPosX + 20;
-    y = uiStatus->drawPosY + 28;
+    //@patch: change star power drawing location
+    x = uiStatus->drawPosX + 128;
+    y = uiStatus->drawPosY + 35;
 
     spBars = uiStatus->displaySP / 256;
     limit = uiStatus->displaySP % 256;

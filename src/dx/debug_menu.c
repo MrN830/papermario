@@ -1,8 +1,6 @@
 #include "dx/debug_menu.h"
 #if DX_DEBUG_MENU
 
-//test push
-
 #include "common.h"
 #include "gcc/string.h"
 

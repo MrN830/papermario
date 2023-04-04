@@ -152,7 +152,9 @@ typedef struct DmaTable {
 typedef struct PartnerData {
     /* 0x00 */ u8 enabled;
     /* 0x01 */ s8 level;
-    /* 0x02 */ s16 unk_02[3];
+    /* 0x02 */ u16 currentHp;
+    /* 0x04 */ u16 maxHp;
+    /* 0x06 */ char pad[2];
 } PartnerData; // size = 0x08
 
 typedef struct HeapNode {
@@ -1863,8 +1865,10 @@ typedef struct Actor {
     /* 0x19B */ char unk_19B[1];
     /* 0x19C */ s32 actorTypeData1[6]; /* 4 = jump sound, 5 = attack sound */ // TODO: struct
     /* 0x1B4 */ s16 actorTypeData1b[2];
-    /* 0x1B8 */ s8 currentHP;
-    /* 0x1B9 */ s8 maxHP;
+    //@patch: s32 instead of s8
+    /* 0x1B8 */ u16 currentHP;
+    //@patch: s32 instead of s8
+    /* 0x1B9 */ u16 maxHP;
     /* 0x1BA */ char unk_1BA[2];
     /* 0x1BC */ s8 hpFraction; /* used to render HP bar */
     /* 0x1BD */ char unk_1BD[3];

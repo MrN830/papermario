@@ -14,12 +14,19 @@
 #include "sprite/npc/BattleLakilester.h"
 #include "sprite/npc/Twink.h"
 
+u8* dx_string_to_msg(u8* msg, const u8* str);
+char customDefendMessage[] = "Defend";
+char customDefendMsgBuffer[sizeof(customDefendMessage)];
+
+extern HudScript HES_MenuDefend;
+extern HudScript HES_MenuDefendDisabled;
+IconHudScriptPair battle_menu_DefendHudScripts = { &HES_MenuDefend, &HES_MenuDefendDisabled };
+
+
 extern HudScript HES_YellowArrow;
 
 extern HudScript HES_MenuFlee;
 extern HudScript HES_MenuFleeDisabled;
-extern HudScript HES_MenuDefend;
-extern HudScript HES_MenuDefendDisabled;
 extern HudScript HES_MenuStrategies;
 extern HudScript HES_MenuStrategiesDisabled;
 extern HudScript HES_MenuPouch;
@@ -3347,6 +3354,14 @@ void btl_state_update_player_menu(void) {
             D_802AD690[entryIdx] = 1;
             D_802AD658[entryIdx] = BattleMenu_LeftJustMessages[BTL_MENU_TYPE_DO_NOTHING];
             D_802AD6C0[entryIdx] = MSG_Menus_Action_DoNothing;
+            entryIdx++;
+            //@patch: add defend option
+            D_802AD640[entryIdx] = battle_menu_DefendHudScripts.enabled;
+            D_802AD678[entryIdx] = BTL_MENU_TYPE_DEFEND;
+            D_802AD690[entryIdx] = TRUE;
+            D_802AD658[entryIdx] = BattleMenu_LeftJustMessages[BTL_MENU_TYPE_DEFEND];
+            dx_string_to_msg(customDefendMsgBuffer, customDefendMessage);
+            D_802AD6C0[entryIdx] = customDefendMsgBuffer;
             entryIdx++;
 
             D_802AD640[entryIdx] = battle_menu_FleeHudScripts.enabled;

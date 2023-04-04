@@ -175,6 +175,46 @@ DefaultWindowStyle gBoxDefaultStyles[] = {
         .combineModeIndex = 1,
         .color1 = { .r = 126, .g = 125, .b = 216, .a = 255 },
         .color2 = { .r = 217, .g = 108, .b = 201, .a = 255 }
+    },
+    //new style 0x17
+    {
+        .bgIndex = 1,
+        .cornersIndex = 8,
+        .combineModeIndex = 1,
+        .color1 = { .r = 0xA6, .g = 0xD7, .b = 0x95, .a = 255 },
+        .color2 = { .r = 0x39, .g = 0x78, .b = 0x21, .a = 255 }
+    },
+    //new style 0x18
+    {
+        .bgIndex = 1,
+        .cornersIndex = 8,
+        .combineModeIndex = 1,
+        .color1 = { .r = 0x9B, .g = 0xC9, .b = 0xEF, .a = 255 },
+        .color2 = { .r = 0x24, .g = 0x62, .b = 0x92, .a = 255 }
+    },
+    //new style 0x19
+    {
+        .bgIndex = 1,
+        .cornersIndex = 8,
+        .combineModeIndex = 1,
+        .color1 = { .r = 0x9B, .g = 0xC9, .b = 0xEF, .a = 255 },
+        .color2 = { .r = 0x24, .g = 0x62, .b = 0x92, .a = 255 }
+    },
+    //new style 0x1A (used for hp bars)
+    {
+        .bgIndex = 1,
+        .cornersIndex = 8,
+        .combineModeIndex = 1,
+        .color1 = { .r = 0xFC, .g = 0x07, .b = 0x28, .a = 255 },
+        .color2 = { .r = 0x39, .g = 0x48, .b = 0x21, .a = 255 }
+    },
+    //new style 0x1B (used for hp bars)
+    {
+        .bgIndex = 1,
+        .cornersIndex = 8,
+        .combineModeIndex = 1,
+        .color1 = { .r = 0xEF, .g = 0xFA, .b = 0x0C, .a = 255 },
+        .color2 = { .r = 0x99, .g = 0x68, .b = 0x21, .a = 255 }
     }
 };
 
@@ -828,3 +868,13 @@ s32 draw_box(s32 flags, WindowStyle windowStyle, s32 posX, s32 posY, s32 posZ, s
     }
 }
 
+s32 draw_box_wrapper(s32 posX, s32 posY, s32 sizeX, s32 sizeY, WindowStyle style, s32 opacity) {
+    draw_box(0, style, posX, posY, 0, sizeX, sizeY, opacity, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
+// % A0 = posX
+// % A1 = posY
+// % A2 = sizeX
+// % A3 = sizeY
+// % T0 = style
+// % T1 = opacity
