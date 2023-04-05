@@ -134,14 +134,8 @@ void DrawNewStatusMenuBarsAndIcons(s32 x, s32 y) {
     DrawFpBar(x, y);
     drawExpAndCoinsBar(x, y);
     drawStarPowerBar(x, y);
-    gPlayerData.partners[gPlayerData.currentPartner].currentHp = 120;
-    gPlayerData.partners[gPlayerData.currentPartner].maxHp = 120;
-
-    gPlayerData.curHP = 120;
-    gPlayerData.curMaxHP = 120;
-    gPlayerData.curFP = 120;
-    gPlayerData.curMaxFP = 120;
+    // gPlayerData.partners[gPlayerData.currentPartner].currentHp = 120;
+    // gPlayerData.partners[gPlayerData.currentPartner].maxHp = 120;
     gPlayerData.maxStarPower = 7;
-    gPlayerData.specialBarsFilled = 7;
 }
 

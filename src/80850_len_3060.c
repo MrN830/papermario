@@ -30,13 +30,22 @@ extern HudScript* SlashHudScript;
 void status_menu_start_blinking_coins(void);
 void status_menu_stop_blinking_coins(void);
 
+void setPartnersHealth(void) {
+    s32 i;
+    for (i = 0; i < 10; i++) {
+        gPlayerData.partners[gPlayerData.currentPartner].currentHp = 10;
+        gPlayerData.partners[gPlayerData.currentPartner].maxHp = 10;
+    }
+}
+
 void clear_player_data(void) {
     PlayerData* playerData = &gPlayerData;
     s32 i;
 
     D_8010CD10 = 0;
     D_8010CD12 = 0;
-
+    //@patch: set partner initial hp values
+    setPartnersHealth();
     playerData->hammerLevel = -1;
     playerData->curHP = 10;
     playerData->curMaxHP = 10;

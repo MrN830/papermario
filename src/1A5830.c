@@ -155,7 +155,9 @@ HitResult calc_enemy_test_target(Actor* actor) {
             target->currentHP = playerData->curHP;
             break;
         case ACTOR_CLASS_PARTNER:
-            target->currentHP = 127;
+        //@patch: dont always set partner hp to 127
+            target->currentHP = gPlayerData.partners[gPlayerData.currentPartner].currentHp;
+            //target->currentHP = 127;
             break;
         case ACTOR_CLASS_ENEMY:
             break;
@@ -277,7 +279,8 @@ HitResult calc_enemy_damage_target(Actor* attacker) {
             target->currentHP = gPlayerData.curHP;
             break;
         case ACTOR_CLASS_PARTNER:
-        //@patch dont set partner hp to 127
+            //@patch: dont set partner hp to 127
+            target->currentHP = gPlayerData.partners[gPlayerData.currentPartner].currentHp;
             //target->currentHP = 127;
             break;
         case ACTOR_CLASS_ENEMY:
@@ -452,7 +455,8 @@ HitResult calc_enemy_damage_target(Actor* attacker) {
             if (target->stoneStatus == STATUS_END) {
                 if (target->koStatus == STATUS_END && !(battleStatus->currentAttackElement & DAMAGE_TYPE_UNBLOCKABLE)) {
                     if (check_block_input(BUTTON_A)) {
-                        damage = 0;
+                        //@patch:parnter blocking now just does -1 damage
+                        damage--;
                         sfx_play_sound_at_position(SOUND_231, SOUND_SPACE_MODE_0, state->goalPos.x, state->goalPos.y, state->goalPos.z);
                         func_802667F0(0, target, state->goalPos.x, state->goalPos.y, state->goalPos.z);
                         gBattleStatus.flags1 |= BS_FLAGS1_ATK_BLOCKED;
@@ -508,6 +512,9 @@ HitResult calc_enemy_damage_target(Actor* attacker) {
         if (actorClass == ACTOR_CLASS_PLAYER) {
             battleStatus->damageTaken += damage;
             gPlayerData.curHP = target->currentHP;
+        } else if (actorClass == ACTOR_CLASS_PARTNER) {
+            battleStatus->damageTaken += damage;
+            gPlayerData.partners[gPlayerData.currentPartner].currentHp = target->currentHP;
         }
     }
 
@@ -677,7 +684,7 @@ HitResult calc_enemy_damage_target(Actor* attacker) {
         && gBattleStatus.flags1 & BS_FLAGS1_SP_EVT_ACTIVE
         && !(target->flags & ACTOR_FLAG_NO_DMG_APPLY))
     {
-        inflict_partner_ko(target, STATUS_DAZE, battleStatus->lastAttackDamage);
+        //inflict_partner_ko(target, STATUS_DAZE, battleStatus->lastAttackDamage);
     }
 
     if (!(target->flags & ACTOR_FLAG_NO_DMG_POPUP)) {
