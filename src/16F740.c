@@ -1051,6 +1051,11 @@ void btl_state_update_switch_to_player(void) {
     Actor* partner = gBattleStatus.partnerActor;
     s32 i;
 
+    //@patch: take partner turn if at 0 hp
+    if (gPlayerData.partners[gPlayerData.currentPartner].currentHp == 0) {
+        gBattleStatus.flags2 |= BS_FLAGS2_4; //take partner turn if at 0 hp
+    }
+
     if (gBattleSubState == BTL_SUBSTATE_INIT) {
         gBattleStatus.flags1 &= ~BS_FLAGS1_PARTNER_ACTING;
         reset_actor_turn_info();

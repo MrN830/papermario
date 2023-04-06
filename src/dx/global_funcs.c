@@ -134,8 +134,20 @@ void DrawNewStatusMenuBarsAndIcons(s32 x, s32 y) {
     DrawFpBar(x, y);
     drawExpAndCoinsBar(x, y);
     drawStarPowerBar(x, y);
-    // gPlayerData.partners[gPlayerData.currentPartner].currentHp = 120;
-    // gPlayerData.partners[gPlayerData.currentPartner].maxHp = 120;
+
+    if (gGameStatus.pressedButtons[0] & 0x00000800) { //dpad up
+        gPlayerData.curHP = 95;
+        gPlayerData.curMaxHP = 95;
+        gPlayerData.hardMaxHP = 95;
+        gPlayerData.curFP = 95;
+        gPlayerData.curMaxFP = 95;
+        gPlayerData.hardMaxFP = 95;
+        gPlayerData.starPoints = 99;
+        gPlayerData.invItems[0] = ITEM_SHOOTING_STAR;
+        gPlayerData.invItems[1] = ITEM_SHOOTING_STAR;
+        gPlayerData.invItems[2] = ITEM_SHOOTING_STAR;
+        gPlayerData.invItems[3] = ITEM_SHOOTING_STAR;
+    }
     gPlayerData.maxStarPower = 7;
 }
 

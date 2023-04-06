@@ -903,7 +903,8 @@ s32 dispatch_damage_event_partner(s32 damageAmount, s32 event, s32 stopMotion) {
     partner->hpChangeCounter += hpChange;
 
     hpChange = partner->hpChangeCounter;
-    partner->currentHP = 127;
+    //@patch: remove hardcoded 127 hp
+    //partner->currentHP = 127;
     partner->damageCounter += hpChange;
     partner->hpChangeCounter -= hpChange;
     battleStatus->lastAttackDamage = 0;

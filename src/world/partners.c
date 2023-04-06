@@ -143,6 +143,10 @@ HudScript* DigitHudScripts[] = {
     &HES_StatusDigit0, &HES_StatusDigit1, &HES_StatusDigit2, &HES_StatusDigit3, &HES_StatusDigit4,
     &HES_StatusDigit5, &HES_StatusDigit6, &HES_StatusDigit7, &HES_StatusDigit8, &HES_StatusDigit9,
 };
+// HudScript* DigitHudScripts[] = {
+//     &HES_StatusDigit0, &HES_StatusDigit1, &HES_StatusDigit2, &HES_StatusDigit3, &HES_StatusDigit4,
+//     &HES_StatusDigit5, &HES_StatusDigit6, &HES_StatusDigit7, &HES_StatusDigit8, &HES_StatusDigit9,
+// };
 HudScript* TimesHudScript = &HES_StatusTimes;
 HudScript* SlashHudScript = &HES_StatusSlash;
 HudScript* SPIncrementHudScripts[] = {

@@ -2818,7 +2818,12 @@ void btl_state_update_player_menu(void) {
             break;
         case BTL_SUBSTATE_PLAYER_MENU_MAIN_SHOW_CANT_SWAP:
             if (gBattleStatus.flags2 & BS_FLAGS2_4) {
-                btl_show_variable_battle_message(BTL_MSG_50, 60, 0);
+                //@patch: show different message if partner KOd
+                if (gPlayerData.partners[gPlayerData.currentPartner].currentHp == 0) {
+                } else {
+                    btl_show_variable_battle_message(BTL_MSG_50, 60, 0);
+                }
+                
             } else {
                 btl_show_variable_battle_message(BTL_MSG_51, 60, playerData->currentPartner);
             }
@@ -3628,6 +3633,29 @@ void btl_state_draw_player_menu(void) {
 
 static const f32 padding = 0.0f;
 
+#define ANIM_BattleGoombario_HurtStill 0x09000A
+#define ANIM_BattleKooper_Hurt 0x0A0011
+#define ANIM_BattleBombette_Hurt 0x0B0012
+#define ANIM_BattleParakarry_HurtStill 0x0C000D
+#define ANIM_Goompa_Hurt 0x9D0006
+#define ANIM_BattleWatt_Hurt 0x0E000C
+#define ANIM_BattleSushie_Hurt 0x0F000D
+#define ANIM_BattleLakilester_Hurt 0x10000A
+#define ANIM_BattleBow_Hurt 0x0D0015
+
+s32 partnerKOAnimTable[] = {
+    0,
+    ANIM_BattleGoombario_HurtStill,
+    ANIM_BattleKooper_Hurt,
+    ANIM_BattleBombette_Hurt,
+    ANIM_BattleParakarry_HurtStill,
+    ANIM_Goompa_Hurt,
+    ANIM_BattleWatt_Hurt,
+    ANIM_BattleSushie_Hurt,
+    ANIM_BattleLakilester_Hurt,
+    ANIM_BattleBow_Hurt,
+};
+
 void btl_state_update_partner_menu(void) {
     BattleStatus* battleStatus = &gBattleStatus;
     PlayerData* playerData = &gPlayerData;
@@ -3800,7 +3828,13 @@ void btl_state_update_partner_menu(void) {
             if (D_802ACC60 != 0) {
                 D_802ACC60--;
             } else if (entryIdx != 0) {
-                set_animation(ACTOR_PARTNER, 0, BattleMenu_PartnerIdleAnims[playerData->currentPartner]);
+                //@patch: change idle animation if partner is at 0 hp
+                if (gPlayerData.partners[gPlayerData.currentPartner].currentHp == 0) {
+                    set_animation(ACTOR_PARTNER, 0, partnerKOAnimTable[playerData->currentPartner]);
+                } else {
+                    set_animation(ACTOR_PARTNER, 0, BattleMenu_PartnerIdleAnims[playerData->currentPartner]);
+                }
+                
                 battleStatus->lastPartnerMenuSelection[BTL_MENU_IDX_MAIN] = battleStatus->unk_4A = battle_menu_submenuIDs[entryIdx - 1];
                 if (battleStatus->unk_4A == 7) {
                     gBattleSubState = BTL_SUBSTATE_PARTNER_MENU_STRATEGIES_1;

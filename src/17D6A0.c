@@ -3003,6 +3003,12 @@ ApiStatus func_8024F940(Evt* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
+u8* dx_string_to_msg(u8* msg, const u8* str);
+char partnerFaintedMessage[] = "Partner Has Fainted!";
+char partnerFaintedMessageBuffer[sizeof(partnerFaintedMessage)];
+char heDeadMessage[] = "he dead";
+char heDeadMessageBuffer[sizeof(heDeadMessage)];
+
 void btl_show_battle_message(s32 messageIndex, s32 duration) {
     PopupMessage* popup = btl_create_popup();
 

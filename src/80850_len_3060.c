@@ -720,16 +720,17 @@ void update_status_menu(void) {
     }
 
     showStat = TRUE;
-    if (uiStatus->hpBlinking) {
-        if (uiStatus->hpBlinkCounter > 8) {
-            showStat = FALSE;
-            if (uiStatus->hpBlinkCounter > 12) {
-                uiStatus->hpBlinkCounter = 0;
-                showStat = TRUE;
-            }
-        }
-        uiStatus->hpBlinkCounter++;
-    }
+    //@patch: remove hp blinking
+    // if (uiStatus->hpBlinking) {
+    //     if (uiStatus->hpBlinkCounter > 8) {
+    //         showStat = FALSE;
+    //         if (uiStatus->hpBlinkCounter > 12) {
+    //             uiStatus->hpBlinkCounter = 0;
+    //             showStat = TRUE;
+    //         }
+    //     }
+    //     uiStatus->hpBlinkCounter++;
+    // }
 
     if (showStat) {
         //@patch: draws partner curHP / maxHP
