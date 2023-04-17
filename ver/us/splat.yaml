@@ -17720,7 +17720,7 @@ segments:
       - ParadeMario
       - ParadeShyGuy
       - ParadeTwink
-      - Leaf
+      - CleftBald ##Leaf
   - [0x1B82208, bin] # end of sprite data - todo: figure out what this is
   - start: 0x1B83000
     type: pm_msg
